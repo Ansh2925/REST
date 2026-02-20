@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from .models import Book
+from .serializers import BookSerializer
 
 @api_view(['POST', 'GET'])
 def books(request):
@@ -19,9 +21,17 @@ class BookList(APIView):
         return Response({'message':'New book created'}, status.HTTP_201_CREATED)
 
 
-class Book(APIView):
-    def get(self, request, pk):
-        return Response({'message':'Single book with id ' + str(pk)}, status.HTTP_200_OK)
+# class Book(APIView):
+#     def get(self, request, pk):
+#         return Response({'message':'Single book with id ' + str(pk)}, status.HTTP_200_OK)
+#
+#     def put(self, request, pk):
+#         return Response({'title':request.data.get('title')}, status.HTTP_200_OK)
 
-    def put(self, request, pk):
-        return Response({'title':request.data.get('title')}, status.HTTP_200_OK)
+class BookView(generics.ListCreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class SingleBookView(generics.RetrieveUpdateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
